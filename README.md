@@ -12,6 +12,8 @@
 
 > A pixel-art browser survival game built in pure HTML, CSS & JavaScript. No frameworks. No dependencies. Just blocks, mobs, and death.
 
+🔗 **[▶ Play it Live](https://ahmedalaa999.github.io/Minecraft-Hardcore/)** &nbsp;|&nbsp; 👤 **Made by [Ahmed Alaa](https://github.com/ahmedalaa999)**
+
 ---
 
 ## 📸 Overview
@@ -151,12 +153,24 @@ The UI is built around a deliberate **pixel-art dark theme**:
 - [ ] Day/night cycle timer (auto-toggles)
 - [ ] Biome system affecting loot tables
 
---
-Made By Ahmed ALaa
-----------
+---
+
+## 📄 License
+
+MIT — do whatever you want with it. Build on it, break it, ship it.
+
+---
+
+## 👤 Author
+
+**Ahmed Alaa**
+- 🌐 [Live Demo](https://ahmedalaa999.github.io/Minecraft-Hardcore/)
+- 🐙 [GitHub](https://github.com/ahmedalaa999)
+
+---
 
 ```
 > Waiting for input...
 ```
 
-*Made with ⛏ and zero regrets.*
+*Made by **Ahmed Alaa** with ⛏ and zero regrets.*
