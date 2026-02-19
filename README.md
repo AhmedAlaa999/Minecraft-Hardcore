@@ -157,7 +157,7 @@ The UI is built around a deliberate **pixel-art dark theme**:
 
 ## 📄 License
 
-MIT — do whatever you want with it. Build on it, break it, ship it.
+Do whatever you want with it. Build on it, break it, ship it.
 
 ---
 
