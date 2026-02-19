@@ -151,13 +151,9 @@ The UI is built around a deliberate **pixel-art dark theme**:
 - [ ] Day/night cycle timer (auto-toggles)
 - [ ] Biome system affecting loot tables
 
----
-
-## 📄 License
-
-MIT — do whatever you want with it. Build on it, break it, ship it.
-
----
+--
+Made By Ahmed ALaa
+----------
 
 ```
 > Waiting for input...
