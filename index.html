@@ -462,18 +462,33 @@
 </div>
 
 <script>
-let health = 100, hunger = 100, xp = 0, level = 1;
+let health = 100;
+let hunger = 100;
+let xp = 0;
+let level = 1;
 let inventory = [];
 let isNight = false;
 
+const mineBtn = document.querySelector('.action-btn');
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
 function updateUI() {
-  document.getElementById('healthBar').style.width = Math.max(0, health) + '%';
-  document.getElementById('hungerBar').style.width = Math.max(0, hunger) + '%';
-  document.getElementById('xpBar').style.width = (xp % 100) + '%';
-  document.getElementById('healthVal').textContent = Math.max(0, Math.round(health));
-  document.getElementById('hungerVal').textContent = Math.max(0, Math.round(hunger));
+  health = clamp(health, 0, 100);
+  hunger = clamp(hunger, 0, 100);
+
+  document.getElementById('healthBar').style.width = health + '%';
+  document.getElementById('hungerBar').style.width = hunger + '%';
+  document.getElementById('xpBar').style.width = (xp % (100 * level)) / (100 * level) * 100 + '%';
+
+  document.getElementById('healthVal').textContent = Math.round(health);
+  document.getElementById('hungerVal').textContent = Math.round(hunger);
   document.getElementById('xpVal').textContent = xp;
   document.getElementById('level').textContent = level;
+
+  mineBtn.disabled = hunger < 10;
 
   const inv = document.getElementById('inv');
   if (inventory.length === 0) {
@@ -481,6 +496,12 @@ function updateUI() {
   } else {
     inv.innerHTML = inventory.map(i => `<div class="slot">${i}</div>`).join('');
   }
+
+  if (hunger === 0) {
+    health -= 1;
+  }
+
+  checkDeath();
 }
 
 function log(msg) {
@@ -499,47 +520,67 @@ function flashDamage() {
 }
 
 function mine() {
+  if (hunger < 10 || health <= 0) return;
+
   const items = ['🪵','🪨','💎','🧱','🪙','⚗️'];
   const loot = items[Math.floor(Math.random() * items.length)];
+
   inventory.push(loot);
   hunger -= 10;
   xp += 15;
+
   log(`Mined block — found ${loot}`);
-  checkLevel(); checkDeath(); updateUI();
+
+  checkLevel();
+  updateUI();
 }
 
 function eat() {
-  if (hunger >= 100) { log('Already full.'); return; }
-  hunger = Math.min(100, hunger + 30);
+  if (hunger >= 100 || health <= 0) return;
+
+  hunger += 30;
   log('Ate food. Hunger restored.');
   updateUI();
 }
 
 function fight() {
+  if (health <= 0) return;
+
   const base = Math.floor(Math.random() * 20);
   const dmg = isNight ? base + 8 : base;
+
   health -= dmg;
-  xp += 20;
   hunger -= 15;
+  xp += 20;
+
   flashDamage();
   log(`Mob hit you for ${dmg} damage${isNight ? ' (night bonus)' : ''}!`);
-  checkLevel(); checkDeath(); updateUI();
+
+  checkLevel();
+  updateUI();
 }
 
 function spawnCreeper() {
+  if (health <= 0) return;
+
   const dmg = isNight ? 40 : 30;
+
   health -= dmg;
+
   flashDamage();
   log(`💥 BOOM — Creeper exploded! -${dmg} HP`);
-  checkDeath(); updateUI();
+
+  updateUI();
 }
 
 function toggleNight() {
   isNight = !isNight;
+
   document.getElementById('night-overlay').classList.toggle('active', isNight);
   document.getElementById('night-ind').classList.toggle('active', isNight);
   document.getElementById('nightLabel').textContent = isNight ? 'Toggle Day' : 'Toggle Night';
   document.getElementById('nightIcon').textContent = isNight ? '☀️' : '🌙';
+
   log(isNight ? 'Night fell. Danger increased.' : 'Day has come. Stay safe.');
 }
 
@@ -558,13 +599,19 @@ function checkDeath() {
 }
 
 function respawn() {
-  health = 100; hunger = 100; xp = 0; level = 1; inventory = [];
+  health = 100;
+  hunger = 100;
+  xp = 0;
+  level = 1;
+  inventory = [];
   isNight = false;
+
   document.getElementById('night-overlay').classList.remove('active');
   document.getElementById('night-ind').classList.remove('active');
   document.getElementById('nightLabel').textContent = 'Toggle Night';
   document.getElementById('nightIcon').textContent = '🌙';
   document.getElementById('death-screen').classList.remove('show');
+
   log('Respawned at world spawn.');
   updateUI();
 }
@@ -572,4 +619,5 @@ function respawn() {
 updateUI();
 </script>
 </body>
+
 </html>
