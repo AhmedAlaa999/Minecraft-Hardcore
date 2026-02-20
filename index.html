@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Minecraft Survival</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323:wght@400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --dirt: #8B6340;
+    --stone: #828282;
+    --grass: #5D9B3F;
+    --dark: #1a1a1a;
+    --darker: #0d0d0d;
+    --wood: #9B7E54;
+    --health: #FF3333;
+    --hunger: #FF9900;
+    --xp: #7FFF00;
+    --ui-bg: #2a2a2a;
+    --ui-border: #555;
+    --text: #e0e0e0;
+    --pixel: 2px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; image-rendering: pixelated; }
+
+  body {
+    background-color: var(--darker);
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.01) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.01) 1px, transparent 1px);
+    background-size: 16px 16px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .game-wrapper {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px 16px 40px;
+  }
+
+  header { text-align: center; margin-bottom: 28px; }
+
+  h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 16px;
+    color: var(--grass);
+    text-shadow: 3px 3px 0 #2a5a1a, 0 0 20px rgba(93,155,63,0.4);
+    letter-spacing: 1px;
+    line-height: 1.6;
+  }
+
+  .subtitle { font-size: 14px; color: var(--stone); margin-top: 6px; letter-spacing: 2px; }
+
+  .panel {
+    background: var(--ui-bg);
+    border: 3px solid var(--ui-border);
+    box-shadow: 4px 4px 0 #000, inset 1px 1px 0 rgba(255,255,255,0.05);
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+
+  .panel-title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: var(--stone);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 14px;
+  }
+
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .stat-block { display: flex; flex-direction: column; gap: 6px; }
+  .stat-label { font-size: 16px; color: #aaa; display: flex; align-items: center; gap: 6px; }
+  .stat-label span { font-size: 18px; }
+
+  .bar-outer {
+    height: 14px;
+    background: #111;
+    border: 2px solid #444;
+    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bar-inner { height: 100%; transition: width 0.2s steps(10); position: relative; }
+  .bar-inner::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.2); }
+
+  .health-bar { background: var(--health); }
+  .hunger-bar { background: var(--hunger); }
+  .xp-bar     { background: var(--xp); }
+
+  .stat-value { font-size: 14px; color: #888; text-align: right; }
+
+  .level-row {
+    text-align: center;
+    margin: 6px 0 0;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    color: var(--xp);
+    text-shadow: 0 0 8px rgba(127,255,0,0.5);
+    letter-spacing: 1px;
+  }
+
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+  .action-btn {
+    background: #1e1e1e;
+    border: 3px solid #444;
+    color: var(--text);
+    font-family: 'VT323', monospace;
+    font-size: 22px;
+    padding: 12px 10px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: none;
+    box-shadow: 3px 3px 0 #000;
+    letter-spacing: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .action-btn .btn-icon { font-size: 26px; flex-shrink: 0; }
+  .action-btn .btn-desc { font-size: 13px; color: #666; display: block; font-family: 'Press Start 2P', monospace; margin-top: 2px; }
+
+  .action-btn:hover { background: #2a2a2a; border-color: var(--grass); color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #000; }
+  .action-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
+  .action-btn.danger:hover { border-color: var(--health); }
+  .action-btn.warning:hover { border-color: #888; }
+
+  /* Visually & functionally disable the button */
+  .action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: 3px 3px 0 #000;
+  }
+
+  .log-area { min-height: 56px; display: flex; align-items: center; padding: 4px 0; }
+  #log { font-size: 22px; color: #ccc; line-height: 1.4; width: 100%; }
+  #log.flash { animation: logFlash 0.3s steps(2); }
+
+  @keyframes logFlash { 0% { color: #fff; } 100% { color: #ccc; } }
+
+  .inv-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .slot {
+    width: 54px; height: 54px;
+    background: #111;
+    border: 3px solid #444;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
+    transition: border-color 0.15s;
+  }
+  .slot:hover { border-color: #888; }
+  .empty-slots { color: #333; font-size: 16px; padding: 8px 0; }
+
+  #night-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0, 0, 30, 0.65);
+    pointer-events: none; z-index: 10;
+    opacity: 0; transition: opacity 0.8s;
+  }
+  #night-overlay.active { opacity: 1; }
+
+  .night-indicator {
+    position: fixed; top: 16px; right: 16px;
+    font-family: 'Press Start 2P', monospace; font-size: 8px;
+    color: #6688cc; background: rgba(0,0,0,0.7);
+    border: 2px solid #6688cc; padding: 8px 12px;
+    z-index: 20; opacity: 0; transition: opacity 0.5s;
+    text-shadow: 0 0 8px #6688cc;
+  }
+  .night-indicator.active { opacity: 1; }
+
+  #death-screen {
+    position: fixed; inset: 0;
+    background: rgba(100, 0, 0, 0.85);
+    z-index: 100; display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+    font-family: 'Press Start 2P', monospace;
+  }
+  #death-screen.show { display: flex; }
+  #death-screen h2 { font-size: 20px; color: #fff; text-shadow: 3px 3px 0 #5a0000; animation: flicker 1s infinite steps(2); }
+  #death-screen p { font-size: 10px; color: #ffaaaa; }
+
+  @keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+  .respawn-btn {
+    margin-top: 12px; background: #5a0000;
+    border: 3px solid #ff4444; color: #fff;
+    font-family: 'Press Start 2P', monospace; font-size: 10px;
+    padding: 14px 24px; cursor: pointer;
+    box-shadow: 4px 4px 0 #000; letter-spacing: 1px;
+  }
+  .respawn-btn:hover { background: #7a0000; }
+  .respawn-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
+
+  #dmg-flash {
+    position: fixed; inset: 0;
+    background: rgba(200, 0, 0, 0.3);
+    pointer-events: none; z-index: 50; opacity: 0;
+  }
+  #dmg-flash.hit { animation: hitAnim 0.4s forwards; }
+  @keyframes hitAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
+</style>
+</head>
+<body>
+
+<div id="night-overlay"></div>
+<div class="night-indicator" id="night-ind">🌙 NIGHT</div>
+<div id="dmg-flash"></div>
+
+<div id="death-screen">
+  <h2>💀 YOU DIED</h2>
+  <p>All items lost. Respawning at world spawn.</p>
+  <button class="respawn-btn" onclick="respawn()">[ RESPAWN ]</button>
+</div>
+
+<div class="game-wrapper">
+  <header>
+    <h1>⛏ SURVIVAL ⛏</h1>
+    <div class="subtitle">// HARDCORE MODE //</div>
+  </header>
+
+  <div class="panel">
+    <div class="panel-title">— Status —</div>
+    <div class="stats-grid">
+      <div class="stat-block">
+        <div class="stat-label"><span>❤️</span> Health</div>
+        <div class="bar-outer"><div id="healthBar" class="bar-inner health-bar" style="width:100%"></div></div>
+        <div class="stat-value" id="healthVal">100</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label"><span>🍖</span> Hunger</div>
+        <div class="bar-outer"><div id="hungerBar" class="bar-inner hunger-bar" style="width:100%"></div></div>
+        <div class="stat-value" id="hungerVal">100</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-label"><span>⭐</span> XP</div>
+        <div class="bar-outer"><div id="xpBar" class="bar-inner xp-bar" style="width:0%"></div></div>
+        <div class="stat-value" id="xpVal">0</div>
+      </div>
+    </div>
+    <div class="level-row">[ LEVEL <span id="level">1</span> ]</div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">— Actions —</div>
+    <div class="actions">
+      <button class="action-btn" id="mineBtn" onclick="mine()">
+        <span class="btn-icon">⛏</span>
+        <div><div>Mine</div><span class="btn-desc">-10 hunger</span></div>
+      </button>
+      <button class="action-btn" onclick="eat()">
+        <span class="btn-icon">🍖</span>
+        <div><div>Eat Food</div><span class="btn-desc">+30 hunger</span></div>
+      </button>
+      <button class="action-btn danger" onclick="fight()">
+        <span class="btn-icon">🗡</span>
+        <div><div>Fight Mob</div><span class="btn-desc">random dmg</span></div>
+      </button>
+      <button class="action-btn danger" onclick="spawnCreeper()">
+        <span class="btn-icon">💣</span>
+        <div><div>Creeper!</div><span class="btn-desc">-30 hp</span></div>
+      </button>
+      <button class="action-btn warning" onclick="toggleNight()" style="grid-column: span 2">
+        <span class="btn-icon" id="nightIcon">🌙</span>
+        <div><div id="nightLabel">Toggle Night</div><span class="btn-desc">danger increases</span></div>
+      </button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">— Log —</div>
+    <div class="log-area">
+      <div id="log">Waiting for input...</div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <div class="panel-title">— Inventory —</div>
+    <div class="inv-grid" id="inv">
+      <div class="empty-slots">[ empty ]</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let health = 100;
+let hunger = 100;
+let xp = 0;
+let level = 1;
+let inventory = [];
+let isNight = false;
+
+const mineBtn = document.getElementById('mineBtn');
+
+function clamp(val, min, max) {
+  return Math.max(min, Math.min(max, val));
+}
+
+function updateUI() {
+  health = clamp(health, 0, 100);
+  hunger = clamp(hunger, 0, 100);
+
+  document.getElementById('healthBar').style.width = health + '%';
+  document.getElementById('hungerBar').style.width = hunger + '%';
+  document.getElementById('xpBar').style.width = (xp % (100 * level)) / (100 * level) * 100 + '%';
+
+  document.getElementById('healthVal').textContent = Math.round(health);
+  document.getElementById('hungerVal').textContent = Math.round(hunger);
+  document.getElementById('xpVal').textContent = xp;
+  document.getElementById('level').textContent = level;
+
+  // Mining costs 10 hunger, so require hunger > 10 to allow it
+  mineBtn.disabled = hunger <= 10;
+
+  const inv = document.getElementById('inv');
+  if (inventory.length === 0) {
+    inv.innerHTML = '<div class="empty-slots">[ empty ]</div>';
+  } else {
+    inv.innerHTML = inventory.map(i => `<div class="slot">${i}</div>`).join('');
+  }
+
+  if (hunger === 0) {
+    health -= 1;
+  }
+
+  checkDeath();
+}
+
+function log(msg) {
+  const el = document.getElementById('log');
+  el.textContent = '> ' + msg;
+  el.classList.remove('flash');
+  void el.offsetWidth;
+  el.classList.add('flash');
+}
+
+function flashDamage() {
+  const el = document.getElementById('dmg-flash');
+  el.classList.remove('hit');
+  void el.offsetWidth;
+  el.classList.add('hit');
+}
+
+function mine() {
+  // Guard matches UI: hunger must be > 10 to afford the -10 cost
+  if (hunger <= 10 || health <= 0) return;
+
+  const items = ['🪵','🪨','💎','🧱','🪙','⚗️'];
+  const loot = items[Math.floor(Math.random() * items.length)];
+
+  inventory.push(loot);
+  hunger -= 10;
+  xp += 15;
+
+  log(`Mined block — found ${loot}`);
+
+  checkLevel();
+  updateUI();
+}
+
+function eat() {
+  if (hunger >= 100 || health <= 0) return;
+  hunger += 30;
+  log('Ate food. Hunger restored.');
+  updateUI();
+}
+
+function fight() {
+  if (health <= 0) return;
+  const base = Math.floor(Math.random() * 20);
+  const dmg = isNight ? base + 8 : base;
+  health -= dmg;
+  hunger -= 15;
+  xp += 20;
+  flashDamage();
+  log(`Mob hit you for ${dmg} damage${isNight ? ' (night bonus)' : ''}!`);
+  checkLevel();
+  updateUI();
+}
+
+function spawnCreeper() {
+  if (health <= 0) return;
+  const dmg = isNight ? 40 : 30;
+  health -= dmg;
+  flashDamage();
+  log(`💥 BOOM — Creeper exploded! -${dmg} HP`);
+  updateUI();
+}
+
+function toggleNight() {
+  isNight = !isNight;
+  document.getElementById('night-overlay').classList.toggle('active', isNight);
+  document.getElementById('night-ind').classList.toggle('active', isNight);
+  document.getElementById('nightLabel').textContent = isNight ? 'Toggle Day' : 'Toggle Night';
+  document.getElementById('nightIcon').textContent = isNight ? '☀️' : '🌙';
+  log(isNight ? 'Night fell. Danger increased.' : 'Day has come. Stay safe.');
+}
+
+function checkLevel() {
+  while (xp >= 100 * level) {
+    xp -= 100 * level;
+    level++;
+    log(`⭐ LEVEL UP! Now level ${level}`);
+  }
+}
+
+function checkDeath() {
+  if (health <= 0) {
+    document.getElementById('death-screen').classList.add('show');
+  }
+}
+
+function respawn() {
+  health = 100;
+  hunger = 100;
+  xp = 0;
+  level = 1;
+  inventory = [];
+  isNight = false;
+
+  document.getElementById('night-overlay').classList.remove('active');
+  document.getElementById('night-ind').classList.remove('active');
+  document.getElementById('nightLabel').textContent = 'Toggle Night';
+  document.getElementById('nightIcon').textContent = '🌙';
+  document.getElementById('death-screen').classList.remove('show');
+
+  log('Respawned at world spawn.');
+  updateUI();
+}
+
+updateUI();
+</script>
+</body>
+</html>
