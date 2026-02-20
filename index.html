@@ -33,7 +33,6 @@
     position: relative;
   }
 
-  /* Pixel grid background */
   body::before {
     content: '';
     position: fixed;
@@ -54,30 +53,19 @@
     padding: 24px 16px 40px;
   }
 
-  header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
+  header { text-align: center; margin-bottom: 28px; }
 
   h1 {
     font-family: 'Press Start 2P', monospace;
     font-size: 16px;
     color: var(--grass);
-    text-shadow:
-      3px 3px 0 #2a5a1a,
-      0 0 20px rgba(93,155,63,0.4);
+    text-shadow: 3px 3px 0 #2a5a1a, 0 0 20px rgba(93,155,63,0.4);
     letter-spacing: 1px;
     line-height: 1.6;
   }
 
-  .subtitle {
-    font-size: 14px;
-    color: var(--stone);
-    margin-top: 6px;
-    letter-spacing: 2px;
-  }
+  .subtitle { font-size: 14px; color: var(--stone); margin-top: 6px; letter-spacing: 2px; }
 
-  /* Pixel panel */
   .panel {
     background: var(--ui-bg);
     border: 3px solid var(--ui-border);
@@ -95,27 +83,9 @@
     margin-bottom: 14px;
   }
 
-  /* Stats */
-  .stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 14px;
-  }
-
-  .stat-block {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-
-  .stat-label {
-    font-size: 16px;
-    color: #aaa;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
+  .stats-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .stat-block { display: flex; flex-direction: column; gap: 6px; }
+  .stat-label { font-size: 16px; color: #aaa; display: flex; align-items: center; gap: 6px; }
   .stat-label span { font-size: 18px; }
 
   .bar-outer {
@@ -127,31 +97,15 @@
     overflow: hidden;
   }
 
-  .bar-inner {
-    height: 100%;
-    transition: width 0.2s steps(10);
-    position: relative;
-  }
-
-  .bar-inner::after {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 4px;
-    background: rgba(255,255,255,0.2);
-  }
+  .bar-inner { height: 100%; transition: width 0.2s steps(10); position: relative; }
+  .bar-inner::after { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: rgba(255,255,255,0.2); }
 
   .health-bar { background: var(--health); }
   .hunger-bar { background: var(--hunger); }
   .xp-bar     { background: var(--xp); }
 
-  .stat-value {
-    font-size: 14px;
-    color: #888;
-    text-align: right;
-  }
+  .stat-value { font-size: 14px; color: #888; text-align: right; }
 
-  /* Level display */
   .level-row {
     text-align: center;
     margin: 6px 0 0;
@@ -162,12 +116,7 @@
     letter-spacing: 1px;
   }
 
-  /* Action buttons */
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
   .action-btn {
     background: #1e1e1e;
@@ -188,196 +137,92 @@
     overflow: hidden;
   }
 
-  .action-btn .btn-icon {
-    font-size: 26px;
-    flex-shrink: 0;
-  }
+  .action-btn .btn-icon { font-size: 26px; flex-shrink: 0; }
+  .action-btn .btn-desc { font-size: 13px; color: #666; display: block; font-family: 'Press Start 2P', monospace; margin-top: 2px; }
 
-  .action-btn .btn-desc {
-    font-size: 13px;
-    color: #666;
-    display: block;
-    font-family: 'Press Start 2P', monospace;
-    margin-top: 2px;
-  }
-
-  .action-btn:hover {
-    background: #2a2a2a;
-    border-color: var(--grass);
-    color: #fff;
-    transform: translate(-1px, -1px);
-    box-shadow: 4px 4px 0 #000;
-  }
-
-  .action-btn:active {
-    transform: translate(2px, 2px);
-    box-shadow: 1px 1px 0 #000;
-  }
-
+  .action-btn:hover { background: #2a2a2a; border-color: var(--grass); color: #fff; transform: translate(-1px, -1px); box-shadow: 4px 4px 0 #000; }
+  .action-btn:active { transform: translate(2px, 2px); box-shadow: 1px 1px 0 #000; }
   .action-btn.danger:hover { border-color: var(--health); }
   .action-btn.warning:hover { border-color: #888; }
 
-  /* Log */
-  .log-area {
-    min-height: 56px;
-    display: flex;
-    align-items: center;
-    padding: 4px 0;
+  /* Visually & functionally disable the button */
+  .action-btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    pointer-events: none;
+    transform: none;
+    box-shadow: 3px 3px 0 #000;
   }
 
-  #log {
-    font-size: 22px;
-    color: #ccc;
-    line-height: 1.4;
-    width: 100%;
-  }
+  .log-area { min-height: 56px; display: flex; align-items: center; padding: 4px 0; }
+  #log { font-size: 22px; color: #ccc; line-height: 1.4; width: 100%; }
+  #log.flash { animation: logFlash 0.3s steps(2); }
 
-  #log.flash {
-    animation: logFlash 0.3s steps(2);
-  }
+  @keyframes logFlash { 0% { color: #fff; } 100% { color: #ccc; } }
 
-  @keyframes logFlash {
-    0%   { color: #fff; }
-    100% { color: #ccc; }
-  }
-
-  /* Inventory */
-  .inv-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
+  .inv-grid { display: flex; flex-wrap: wrap; gap: 6px; }
 
   .slot {
-    width: 54px;
-    height: 54px;
+    width: 54px; height: 54px;
     background: #111;
     border: 3px solid #444;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     font-size: 26px;
     box-shadow: inset 2px 2px 0 rgba(0,0,0,0.5);
     transition: border-color 0.15s;
-    position: relative;
   }
+  .slot:hover { border-color: #888; }
+  .empty-slots { color: #333; font-size: 16px; padding: 8px 0; }
 
-  .slot:hover {
-    border-color: #888;
-  }
-
-  .slot.empty::after {
-    content: '';
-    width: 16px;
-    height: 16px;
-    border: 2px solid #2a2a2a;
-    display: block;
-  }
-
-  .empty-slots {
-    color: #333;
-    font-size: 16px;
-    padding: 8px 0;
-  }
-
-  /* Night overlay */
   #night-overlay {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(0, 0, 30, 0.65);
-    pointer-events: none;
-    z-index: 10;
-    opacity: 0;
-    transition: opacity 0.8s;
+    pointer-events: none; z-index: 10;
+    opacity: 0; transition: opacity 0.8s;
   }
-
   #night-overlay.active { opacity: 1; }
 
   .night-indicator {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 8px;
-    color: #6688cc;
-    background: rgba(0,0,0,0.7);
-    border: 2px solid #6688cc;
-    padding: 8px 12px;
-    z-index: 20;
-    opacity: 0;
-    transition: opacity 0.5s;
+    position: fixed; top: 16px; right: 16px;
+    font-family: 'Press Start 2P', monospace; font-size: 8px;
+    color: #6688cc; background: rgba(0,0,0,0.7);
+    border: 2px solid #6688cc; padding: 8px 12px;
+    z-index: 20; opacity: 0; transition: opacity 0.5s;
     text-shadow: 0 0 8px #6688cc;
   }
-
   .night-indicator.active { opacity: 1; }
 
-  /* Death screen */
   #death-screen {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(100, 0, 0, 0.85);
-    z-index: 100;
-    display: none;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 16px;
+    z-index: 100; display: none;
+    align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
     font-family: 'Press Start 2P', monospace;
   }
-
   #death-screen.show { display: flex; }
+  #death-screen h2 { font-size: 20px; color: #fff; text-shadow: 3px 3px 0 #5a0000; animation: flicker 1s infinite steps(2); }
+  #death-screen p { font-size: 10px; color: #ffaaaa; }
 
-  #death-screen h2 {
-    font-size: 20px;
-    color: #fff;
-    text-shadow: 3px 3px 0 #5a0000;
-    animation: flicker 1s infinite steps(2);
-  }
-
-  #death-screen p {
-    font-size: 10px;
-    color: #ffaaaa;
-  }
-
-  @keyframes flicker {
-    0% { opacity: 1; }
-    50% { opacity: 0.7; }
-    100% { opacity: 1; }
-  }
+  @keyframes flicker { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
 
   .respawn-btn {
-    margin-top: 12px;
-    background: #5a0000;
-    border: 3px solid #ff4444;
-    color: #fff;
-    font-family: 'Press Start 2P', monospace;
-    font-size: 10px;
-    padding: 14px 24px;
-    cursor: pointer;
-    box-shadow: 4px 4px 0 #000;
-    letter-spacing: 1px;
+    margin-top: 12px; background: #5a0000;
+    border: 3px solid #ff4444; color: #fff;
+    font-family: 'Press Start 2P', monospace; font-size: 10px;
+    padding: 14px 24px; cursor: pointer;
+    box-shadow: 4px 4px 0 #000; letter-spacing: 1px;
   }
   .respawn-btn:hover { background: #7a0000; }
   .respawn-btn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0 #000; }
 
-  /* Damage flash */
   #dmg-flash {
-    position: fixed;
-    inset: 0;
+    position: fixed; inset: 0;
     background: rgba(200, 0, 0, 0.3);
-    pointer-events: none;
-    z-index: 50;
-    opacity: 0;
+    pointer-events: none; z-index: 50; opacity: 0;
   }
-
-  #dmg-flash.hit {
-    animation: hitAnim 0.4s forwards;
-  }
-
-  @keyframes hitAnim {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-  }
+  #dmg-flash.hit { animation: hitAnim 0.4s forwards; }
+  @keyframes hitAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
 </style>
 </head>
 <body>
@@ -423,7 +268,7 @@
   <div class="panel">
     <div class="panel-title">— Actions —</div>
     <div class="actions">
-      <button class="action-btn" onclick="mine()">
+      <button class="action-btn" id="mineBtn" onclick="mine()">
         <span class="btn-icon">⛏</span>
         <div><div>Mine</div><span class="btn-desc">-10 hunger</span></div>
       </button>
@@ -469,7 +314,7 @@ let level = 1;
 let inventory = [];
 let isNight = false;
 
-const mineBtn = document.querySelector('.action-btn');
+const mineBtn = document.getElementById('mineBtn');
 
 function clamp(val, min, max) {
   return Math.max(min, Math.min(max, val));
@@ -488,7 +333,8 @@ function updateUI() {
   document.getElementById('xpVal').textContent = xp;
   document.getElementById('level').textContent = level;
 
-  mineBtn.disabled = hunger < 10;
+  // Mining costs 10 hunger, so require hunger > 10 to allow it
+  mineBtn.disabled = hunger <= 10;
 
   const inv = document.getElementById('inv');
   if (inventory.length === 0) {
@@ -520,7 +366,8 @@ function flashDamage() {
 }
 
 function mine() {
-  if (hunger < 10 || health <= 0) return;
+  // Guard matches UI: hunger must be > 10 to afford the -10 cost
+  if (hunger <= 10 || health <= 0) return;
 
   const items = ['🪵','🪨','💎','🧱','🪙','⚗️'];
   const loot = items[Math.floor(Math.random() * items.length)];
@@ -537,7 +384,6 @@ function mine() {
 
 function eat() {
   if (hunger >= 100 || health <= 0) return;
-
   hunger += 30;
   log('Ate food. Hunger restored.');
   updateUI();
@@ -545,42 +391,32 @@ function eat() {
 
 function fight() {
   if (health <= 0) return;
-
   const base = Math.floor(Math.random() * 20);
   const dmg = isNight ? base + 8 : base;
-
   health -= dmg;
   hunger -= 15;
   xp += 20;
-
   flashDamage();
   log(`Mob hit you for ${dmg} damage${isNight ? ' (night bonus)' : ''}!`);
-
   checkLevel();
   updateUI();
 }
 
 function spawnCreeper() {
   if (health <= 0) return;
-
   const dmg = isNight ? 40 : 30;
-
   health -= dmg;
-
   flashDamage();
   log(`💥 BOOM — Creeper exploded! -${dmg} HP`);
-
   updateUI();
 }
 
 function toggleNight() {
   isNight = !isNight;
-
   document.getElementById('night-overlay').classList.toggle('active', isNight);
   document.getElementById('night-ind').classList.toggle('active', isNight);
   document.getElementById('nightLabel').textContent = isNight ? 'Toggle Day' : 'Toggle Night';
   document.getElementById('nightIcon').textContent = isNight ? '☀️' : '🌙';
-
   log(isNight ? 'Night fell. Danger increased.' : 'Day has come. Stay safe.');
 }
 
@@ -619,5 +455,4 @@ function respawn() {
 updateUI();
 </script>
 </body>
-
 </html>
